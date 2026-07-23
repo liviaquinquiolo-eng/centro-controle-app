@@ -1,683 +1,100 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Control Center</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: #f5f5f5; }
-        .header { background: #378ADD; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .header h1 { font-size: 24px; }
-        .header-buttons { display: flex; gap: 10px; }
-        .header-btn { padding: 10px 15px; background: white; color: #378ADD; border: none; cursor: pointer; border-radius: 4px; font-weight: bold; }
-        .header-btn:hover { background: #e8e8e8; }
-        .header-btn.active { background: #378ADD; color: white; }
-        .logout-btn { background: #d9534f; color: white; }
-        .logout-btn:hover { background: #c9302c; }
-        .container { max-width: 1200px; margin: 20px auto; padding: 20px; }
-        .section { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        h2 { color: #333; margin-bottom: 15px; border-bottom: 2px solid #378ADD; padding-bottom: 10px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
-        button { padding: 12px 20px; background: #378ADD; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background: #2563a8; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
-        .card { background: #f9f9f9; padding: 15px; border-left: 4px solid #378ADD; border-radius: 4px; }
-        .card h3 { color: #333; margin-bottom: 10px; }
-        .card p { color: #666; font-size: 14px; margin: 5px 0; }
-        .badge { display: inline-block; padding: 5px 10px; background: #378ADD; color: white; border-radius: 3px; font-size: 12px; margin: 2px; }
-        .export-btn { background: #5cb85c; }
-        .export-btn:hover { background: #4cae4c; }
-        .message { padding: 15px; margin-bottom: 15px; border-radius: 4px; }
-        .success { background: #d4edda; color: #155724; }
-        .error { background: #f8d7da; color: #721c24; }
-        .hidden { display: none; }
-        .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 15px 0; }
-        .stat-box { background: #378ADD; color: white; padding: 20px; border-radius: 8px; text-align: center; }
-        .stat-box h3 { font-size: 32px; margin-bottom: 10px; }
-        .chart-container { position: relative; height: 300px; margin: 20px 0; }
-        @media (max-width: 900px) {
-            .grid-2 { grid-template-columns: 1fr; }
-            .header-buttons { flex-direction: column; }
-        }
-    </style>
+<title>Control Center</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: Arial, sans-serif; background: #f5f5f5; }
+.header { background: #378ADD; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+.header h1 { font-size: 24px; }
+.header-buttons { display: flex; gap: 10px; }
+.header-btn { padding: 10px 15px; background: white; color: #378ADD; border: none; cursor: pointer; border-radius: 4px; font-weight: bold; }
+.header-btn:hover { background: #e8e8e8; }
+.header-btn.active { background: #378ADD; color: white; }
+.logout-btn { background: #d9534f; color: white; }
+.logout-btn:hover { background: #c9302c; }
+.container { max-width: 1200px; margin: 20px auto; padding: 20px; }
+.section { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+h2 { color: #333; margin-bottom: 15px; border-bottom: 2px solid #378ADD; padding-bottom: 10px; }
+.form-group { margin-bottom: 15px; }
+label { display: block; font-weight: bold; margin-bottom: 5px; }
+input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+button { padding: 12px 20px; background: #378ADD; color: white; border: none; border-radius: 4px; cursor: pointer; }
+button:hover { background: #2563a8; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
+.card { background: #f9f9f9; padding: 15px; border-left: 4px solid #378ADD; border-radius: 4px; }
+.card h3 { color: #333; margin-bottom: 10px; cursor: pointer; }
+.card h3:hover { text-decoration: underline; }
+.card p { color: #666; font-size: 14px; margin: 5px 0; }
+.badge { display: inline-block; padding: 5px 10px; background: #378ADD; color: white; border-radius: 3px; font-size: 12px; margin: 2px; }
+.badge.aberto { background: #ff9800; }
+.badge.progresso { background: #2196F3; }
+.badge.fechado { background: #4CAF50; }
+.export-btn { background: #5cb85c; }
+.export-btn:hover { background: #4cae4c; }
+.message { padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+.success { background: #d4edda; color: #155724; }
+.error { background: #f8d7da; color: #721c24; }
+.hidden { display: none; }
+.stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 15px 0; }
+.stat-box { background: #378ADD; color: white; padding: 20px; border-radius: 8px; text-align: center; }
+.stat-box h3 { font-size: 32px; margin-bottom: 10px; }
+.chart-container { position: relative; height: 300px; margin: 20px 0; }
+.comment { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 4px; border-left: 3px solid #378ADD; }
+.comment-user { font-weight: bold; color: #378ADD; }
+.comment-time { font-size: 12px; color: #999; }
+.comment-text { margin: 5px 0; }
+.ticket-detail { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+.ticket-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.ticket-number { font-size: 24px; font-weight: bold; color: #378ADD; }
+.metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0; }
+.metric-box { background: #378ADD; color: white; padding: 15px; border-radius: 8px; text-align: center; }
+.metric-box h4 { font-size: 24px; margin-bottom: 5px; }
+.metric-box p { font-size: 12px; }
+@media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } .header-buttons { flex-direction: column; } .metrics-grid { grid-template-columns: 1fr; } }
+</style>
 </head>
 <body>
-    <div class="header">
-        <h1>🛡️ Control Center</h1>
-        <div class="header-buttons">
-            <button class="header-btn active" onclick="showHome()">Home</button>
-            <button class="header-btn" id="viewRecordsBtn" onclick="showRecords()" style="display: none;">View Records</button>
-            <button class="logout-btn" onclick="logout()">Sign Out</button>
-        </div>
-    </div>
-
-    <div class="container">
-        <div id="loginPage" class="hidden">
-            <div class="section" style="max-width: 400px; margin: 50px auto;">
-                <h2>Login</h2>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="loginEmail" placeholder="email@example.com">
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" id="loginPassword">
-                </div>
-                <button onclick="handleLogin()" style="width: 100%;">Sign In</button>
-                <p style="text-align: center; margin-top: 15px; cursor: pointer;" onclick="showRegister()">Don't have account? <strong>Sign Up</strong></p>
-                <div id="loginError" class="message error hidden"></div>
-            </div>
-        </div>
-
-        <div id="registerPage" class="hidden">
-            <div class="section" style="max-width: 400px; margin: 50px auto;">
-                <h2>Sign Up</h2>
-                <div class="form-group">
-                    <label>Name</label>
-                    <input type="text" id="registerName">
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="registerEmail">
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" id="registerPassword">
-                </div>
-                <button onclick="handleRegister()" style="width: 100%;">Register</button>
-                <p style="text-align: center; margin-top: 15px; cursor: pointer;" onclick="showLogin()">Have account? <strong>Sign In</strong></p>
-                <div id="registerError" class="message error hidden"></div>
-            </div>
-        </div>
-
-        <div id="homePage" class="hidden">
-            <div id="message"></div>
-
-            <div class="section">
-                <h2>➕ New Incident</h2>
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label>Incident Type *</label>
-                        <select id="incidentType" required>
-                            <option value="">Select Type</option>
-                            <option>Injury/Accident (Safety)</option>
-                            <option>Employee illness</option>
-                            <option>Fire/Emergency</option>
-                            <option>Property Damage</option>
-                            <option>BOLO</option>
-                            <option>Theft/Loss of Company Property</option>
-                            <option>Theft/Loss of Personal Property</option>
-                            <option>Unauthorized Access/Trespassing (Security)</option>
-                            <option>Tailgating</option>
-                            <option>Threat/Verbal Dispute</option>
-                            <option>Ergonomic problems</option>
-                            <option>Falls</option>
-                            <option>Cuts</option>
-                            <option>Electric shock</option>
-                            <option>Burns</option>
-                            <option>Collisions</option>
-                            <option>Commuting accidents (office-home)</option>
-                            <option>psychiatric illness (panic attack, high stress)</option>
-                            <option>Elevator trapped</option>
-                            <option>Lost badge</option>
-                            <option>espionage</option>
-                            <option>other</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Severity *</label>
-                        <select id="incidentSeverity" required>
-                            <option value="low">Low</option>
-                            <option value="medium">Medium</option>
-                            <option value="high">High</option>
-                            <option value="critical">Critical</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label>Location of Incident *</label>
-                        <input type="text" id="incidentLocation" placeholder="Where did it happen?">
-                    </div>
-                    <div class="form-group">
-                        <label>Date *</label>
-                        <input type="date" id="incidentDate" required>
-                    </div>
-                </div>
-
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label>Affected Employee</label>
-                        <input type="text" id="affectedEmployee" placeholder="Employee name">
-                    </div>
-                    <div class="form-group">
-                        <label>Assign Employee *</label>
-                        <select id="assignEmployee" required>
-                            <option value="">Select Employee</option>
-                            <option>Livia Quinquiolo</option>
-                            <option>Regina Murphy</option>
-                            <option>Joe Desmarais</option>
-                            <option>Steven Williams</option>
-                            <option>Nicole Lima</option>
-                            <option>Ali Talabe</option>
-                            <option>Jose Hernandez</option>
-                            <option>Mohammed Ataullah Khan</option>
-                            <option>Larissa Arruda</option>
-                            <option>Vasile Avasiloaei</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Details *</label>
-                    <textarea id="incidentDetails" rows="4" placeholder="Describe what happened..." required></textarea>
-                </div>
-
-                <button onclick="createIncident()">Create Incident</button>
-            </div>
-
-            <div class="section">
-                <h2>➕ New Event</h2>
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label>Event Title</label>
-                        <input type="text" id="eventTitle">
-                    </div>
-                    <div class="form-group">
-                        <label>Location</label>
-                        <input type="text" id="eventLocation">
-                    </div>
-                </div>
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label>Date</label>
-                        <input type="date" id="eventDate">
-                    </div>
-                    <div class="form-group">
-                        <label>Attendees</label>
-                        <input type="number" id="eventAttendees">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Description</label>
-                    <textarea id="eventDescription" rows="3"></textarea>
-                </div>
-                <button onclick="createEvent()">Create Event</button>
-            </div>
-        </div>
-
-        <div id="recordsPage" class="hidden">
-            <div id="recordsMessage"></div>
-
-            <div class="stats">
-                <div class="stat-box">
-                    <h3 id="incidentCount">0</h3>
-                    <p>Incidents</p>
-                </div>
-                <div class="stat-box">
-                    <h3 id="eventCount">0</h3>
-                    <p>Events</p>
-                </div>
-            </div>
-
-            <div class="grid-2">
-                <div class="section">
-                    <h2>📊 Incidents by Severity</h2>
-                    <div class="chart-container">
-                        <canvas id="severityChart"></canvas>
-                    </div>
-                </div>
-                <div class="section">
-                    <h2>📊 Incidents by Type</h2>
-                    <div class="chart-container">
-                        <canvas id="typeChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <div class="section">
-                <h2>📊 Events by Status</h2>
-                <div class="chart-container">
-                    <canvas id="eventChart"></canvas>
-                </div>
-            </div>
-
-            <div class="section">
-                <h2>🚨 Incidents List</h2>
-                <button class="export-btn" onclick="exportIncidentsXLSX()">📥 Export Incidents to Excel</button>
-                <div id="incidentsList" class="grid-cards" style="margin-top: 15px;"></div>
-            </div>
-
-            <div class="section">
-                <h2>📅 Events List</h2>
-                <button class="export-btn" onclick="exportEventsXLSX()">📥 Export Events to Excel</button>
-                <div id="eventsList" class="grid-cards" style="margin-top: 15px;"></div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const API = `${window.location.protocol}//${window.location.hostname}/api`;
-        let currentUser = null;
-        let severityChart = null;
-        let typeChart = null;
-        let eventChart = null;
-
-        function getToken() {
-            return localStorage.getItem('token');
-        }
-
-        function showMessage(text, type = 'success', elementId = 'message') {
-            const msg = document.getElementById(elementId);
-            if (msg) {
-                msg.textContent = text;
-                msg.className = 'message ' + type;
-                msg.classList.remove('hidden');
-                setTimeout(() => msg.classList.add('hidden'), 3000);
-            }
-        }
-
-        function updateHeaderButtons() {
-            const viewRecordsBtn = document.getElementById('viewRecordsBtn');
-            if (currentUser && currentUser.canViewRecords) {
-                viewRecordsBtn.style.display = 'block';
-            } else {
-                viewRecordsBtn.style.display = 'none';
-            }
-        }
-
-        function showHome() {
-            document.getElementById('homePage').classList.remove('hidden');
-            document.getElementById('recordsPage').classList.add('hidden');
-            document.querySelectorAll('.header-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-
-        function showRecords() {
-            if (!currentUser || !currentUser.canViewRecords) {
-                showMessage('You do not have permission to view records', 'error');
-                return;
-            }
-            
-            document.getElementById('homePage').classList.add('hidden');
-            document.getElementById('recordsPage').classList.remove('hidden');
-            document.querySelectorAll('.header-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            loadIncidents();
-            loadEvents();
-        }
-
-        function showLogin() {
-            document.getElementById('loginPage').classList.remove('hidden');
-            document.getElementById('registerPage').classList.add('hidden');
-            document.getElementById('homePage').classList.add('hidden');
-            document.getElementById('recordsPage').classList.add('hidden');
-        }
-
-        function showRegister() {
-            document.getElementById('loginPage').classList.add('hidden');
-            document.getElementById('registerPage').classList.remove('hidden');
-        }
-
-        function showDashboard() {
-            document.getElementById('loginPage').classList.add('hidden');
-            document.getElementById('registerPage').classList.add('hidden');
-            document.getElementById('homePage').classList.remove('hidden');
-            document.getElementById('recordsPage').classList.add('hidden');
-            updateHeaderButtons();
-        }
-
-        async function handleLogin() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-
-            try {
-                const res = await fetch(`${API}/auth/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-                const data = await res.json();
-
-                if (data.token && data.user) {
-                    localStorage.setItem('token', data.token);
-                    currentUser = data.user;
-                    showDashboard();
-                } else {
-                    showMessage(data.error || 'Login failed', 'error', 'loginError');
-                }
-            } catch (err) {
-                showMessage('Connection error', 'error', 'loginError');
-            }
-        }
-
-        async function handleRegister() {
-            const name = document.getElementById('registerName').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-
-            try {
-                const res = await fetch(`${API}/auth/register`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, password })
-                });
-                const data = await res.json();
-
-                if (data.token && data.user) {
-                    localStorage.setItem('token', data.token);
-                    currentUser = data.user;
-                    showDashboard();
-                } else {
-                    showMessage(data.error || 'Registration failed', 'error', 'registerError');
-                }
-            } catch (err) {
-                showMessage('Connection error', 'error', 'registerError');
-            }
-        }
-
-        async function createIncident() {
-            const incidentType = document.getElementById('incidentType').value;
-            const severity = document.getElementById('incidentSeverity').value;
-            const location = document.getElementById('incidentLocation').value;
-            const date = document.getElementById('incidentDate').value;
-            const affectedEmployee = document.getElementById('affectedEmployee').value;
-            const assignEmployee = document.getElementById('assignEmployee').value;
-            const details = document.getElementById('incidentDetails').value;
-
-            if (!incidentType || !location || !date || !details || !assignEmployee) {
-                showMessage('Please fill all required fields', 'error');
-                return;
-            }
-
-            try {
-                const res = await fetch(`${API}/incidents`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${getToken()}`
-                    },
-                    body: JSON.stringify({
-                        title: incidentType,
-                        incidentType,
-                        severity,
-                        location,
-                        date,
-                        affectedEmployee,
-                        assignEmployee,
-                        details
-                    })
-                });
-
-                if (res.ok) {
-                    document.getElementById('incidentType').value = '';
-                    document.getElementById('incidentLocation').value = '';
-                    document.getElementById('incidentDate').value = '';
-                    document.getElementById('affectedEmployee').value = '';
-                    document.getElementById('assignEmployee').value = '';
-                    document.getElementById('incidentDetails').value = '';
-                    showMessage('✓ Incident created!');
-                } else {
-                    showMessage('Error creating incident', 'error');
-                }
-            } catch (err) {
-                showMessage('Error: ' + err.message, 'error');
-            }
-        }
-
-        async function createEvent() {
-            const title = document.getElementById('eventTitle').value;
-            const location = document.getElementById('eventLocation').value;
-            const date = document.getElementById('eventDate').value;
-            const attendees = document.getElementById('eventAttendees').value;
-            const description = document.getElementById('eventDescription').value;
-
-            if (!title || !location || !date) {
-                showMessage('Please fill required fields', 'error');
-                return;
-            }
-
-            try {
-                const res = await fetch(`${API}/events`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${getToken()}`
-                    },
-                    body: JSON.stringify({ title, location, date, attendees, description })
-                });
-
-                if (res.ok) {
-                    document.getElementById('eventTitle').value = '';
-                    document.getElementById('eventLocation').value = '';
-                    document.getElementById('eventDate').value = '';
-                    document.getElementById('eventAttendees').value = '';
-                    document.getElementById('eventDescription').value = '';
-                    showMessage('✓ Event created!');
-                } else {
-                    showMessage('Error creating event', 'error');
-                }
-            } catch (err) {
-                showMessage('Error: ' + err.message, 'error');
-            }
-        }
-
-        async function loadIncidents() {
-            try {
-                const res = await fetch(`${API}/incidents`, {
-                    headers: { 'Authorization': `Bearer ${getToken()}` }
-                });
-                const data = await res.json();
-                const list = document.getElementById('incidentsList');
-
-                document.getElementById('incidentCount').textContent = Array.isArray(data) ? data.length : '0';
-
-                if (!Array.isArray(data) || data.length === 0) {
-                    list.innerHTML = '<p>No incidents yet</p>';
-                    updateCharts([]);
-                    return;
-                }
-
-                list.innerHTML = data.map(i => `
-                    <div class="card">
-                        <h3>${i.incidentType || i.title}</h3>
-                        <p><strong>Severity:</strong> <span class="badge">${i.severity.toUpperCase()}</span></p>
-                        <p><strong>Location:</strong> ${i.location || 'N/A'}</p>
-                        <p><strong>Date:</strong> ${i.date ? new Date(i.date).toLocaleDateString() : 'N/A'}</p>
-                        <p><strong>Affected Employee:</strong> ${i.affectedEmployee || 'N/A'}</p>
-                        <p><strong>Assigned To:</strong> ${i.assignEmployee || 'N/A'}</p>
-                        <p><strong>Status:</strong> ${i.status}</p>
-                        <p><strong>Details:</strong> ${i.details || 'No details'}</p>
-                    </div>
-                `).join('');
-
-                updateCharts(data);
-            } catch (err) {
-                console.error('Error:', err);
-            }
-        }
-
-        function updateCharts(incidents) {
-            if (!Array.isArray(incidents)) incidents = [];
-
-            const severityCount = { low: 0, medium: 0, high: 0, critical: 0 };
-            incidents.forEach(i => severityCount[i.severity]++);
-
-            const ctxSeverity = document.getElementById('severityChart').getContext('2d');
-            if (severityChart) severityChart.destroy();
-            severityChart = new Chart(ctxSeverity, {
-                type: 'bar',
-                data: {
-                    labels: ['Low', 'Medium', 'High', 'Critical'],
-                    datasets: [{
-                        label: 'Incidents',
-                        data: [severityCount.low, severityCount.medium, severityCount.high, severityCount.critical],
-                        backgroundColor: ['#90EE90', '#FFD700', '#FF8C00', '#DC143C']
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-
-            const typeCount = {};
-            incidents.forEach(i => {
-                typeCount[i.incidentType] = (typeCount[i.incidentType] || 0) + 1;
-            });
-
-            const ctxType = document.getElementById('typeChart').getContext('2d');
-            if (typeChart) typeChart.destroy();
-            typeChart = new Chart(ctxType, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(typeCount),
-                    datasets: [{
-                        label: 'Count',
-                        data: Object.values(typeCount),
-                        backgroundColor: '#378ADD'
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-        }
-
-        async function loadEvents() {
-            try {
-                const res = await fetch(`${API}/events`, {
-                    headers: { 'Authorization': `Bearer ${getToken()}` }
-                });
-                const data = await res.json();
-                const list = document.getElementById('eventsList');
-
-                document.getElementById('eventCount').textContent = Array.isArray(data) ? data.length : '0';
-
-                if (!Array.isArray(data) || data.length === 0) {
-                    list.innerHTML = '<p>No events yet</p>';
-                    updateEventChart([]);
-                    return;
-                }
-
-                list.innerHTML = data.map(e => `
-                    <div class="card">
-                        <h3>${e.title}</h3>
-                        <p><strong>Location:</strong> ${e.location}</p>
-                        <p><strong>Date:</strong> ${new Date(e.date).toLocaleDateString()}</p>
-                        <p><strong>Attendees:</strong> ${e.attendees || 0}</p>
-                        <p><strong>Status:</strong> ${e.status}</p>
-                        <p><strong>Description:</strong> ${e.description || 'No description'}</p>
-                    </div>
-                `).join('');
-
-                updateEventChart(data);
-            } catch (err) {
-                console.error('Error:', err);
-            }
-        }
-
-        function updateEventChart(events) {
-            if (!Array.isArray(events)) events = [];
-
-            const statusCount = { 'Agendado': 0, 'Em andamento': 0, 'Concluído': 0, 'Cancelado': 0 };
-            events.forEach(e => {
-                if (statusCount.hasOwnProperty(e.status)) {
-                    statusCount[e.status]++;
-                }
-            });
-
-            const ctxEvent = document.getElementById('eventChart').getContext('2d');
-            if (eventChart) eventChart.destroy();
-            eventChart = new Chart(ctxEvent, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(statusCount),
-                    datasets: [{
-                        label: 'Events',
-                        data: Object.values(statusCount),
-                        backgroundColor: '#378ADD'
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-        }
-
-        function exportIncidentsXLSX() {
-            fetch(`${API}/incidents`, {
-                headers: { 'Authorization': `Bearer ${getToken()}` }
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (!Array.isArray(data) || data.length === 0) {
-                    showMessage('No incidents to export', 'error', 'recordsMessage');
-                    return;
-                }
-
-                const ws_data = [
-                    ['Type', 'Severity', 'Location', 'Date', 'Affected Employee', 'Assigned To', 'Status', 'Details'],
-                    ...data.map(i => [
-                        i.incidentType,
-                        i.severity,
-                        i.location,
-                        new Date(i.date).toLocaleDateString(),
-                        i.affectedEmployee || '',
-                        i.assignEmployee || '',
-                        i.status,
-                        i.details || ''
-                    ])
-                ];
-
-                const ws = XLSX.utils.aoa_to_sheet(ws_data);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, 'Incidents');
-                XLSX.writeFile(wb, 'incidents.xlsx');
-                showMessage('✓ Incidents exported!', 'success', 'recordsMessage');
-            });
-        }
-
-        function exportEventsXLSX() {
-            fetch(`${API}/events`, {
-                headers: { 'Authorization': `Bearer ${getToken()}` }
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (!Array.isArray(data) || data.length === 0) {
-                    showMessage('No events to export', 'error', 'recordsMessage');
-                    return;
-                }
-
-                const ws_data = [
-                    ['Title', 'Location', 'Date', 'Attendees', 'Status', 'Description'],
-                    ...data.map(e => [
-                        e.title,
-                        e.location,
-                        new Date(e.date).toLocaleDateString(),
-                        e.attendees || 0,
-                        e.status,
-                        e.description || ''
-                    ])
-                ];
-
-                const ws = XLSX.utils.aoa_to_sheet(ws_data);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, 'Events');
-                XLSX.writeFile(wb, 'events.xlsx');
-                showMessage('✓ Events exported!', 'success', 'recordsMessage');
-            });
-        }
-
-        function logout() {
-            localStorage.removeItem('token');
-            currentUser = null;
-            showLogin();
-        }
-
-        if (getToken()) {
-            showDashboard();
-        } else {
-            showLogin();
-        }
-    </script>
+<div class="header"><h1>🛡️ Control Center</h1><div class="header-buttons"><button class="header-btn active" onclick="showHome()">Home</button><button class="header-btn" onclick="showTickets()" style="display: none;" id="ticketsBtn">🎟️ Tickets</button><button class="header-btn" id="viewRecordsBtn" onclick="showRecords()" style="display: none;">View Records</button><button class="logout-btn" onclick="logout()">Sign Out</button></div></div>
+<div class="container">
+<div id="loginPage"><div class="section" style="max-width: 400px; margin: 50px auto;"><h2>Login</h2><div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="email@example.com"></div><div class="form-group"><label>Password</label><input type="password" id="loginPassword"></div><button onclick="handleLogin()" style="width: 100%;">Sign In</button><p style="text-align: center; margin-top: 15px; cursor: pointer;" onclick="showRegister()">Don't have account? <strong>Sign Up</strong></p><div id="loginError" class="message error hidden"></div></div></div>
+<div id="registerPage" class="hidden"><div class="section" style="max-width: 400px; margin: 50px auto;"><h2>Sign Up</h2><div class="form-group"><label>Name</label><input type="text" id="registerName"></div><div class="form-group"><label>Email</label><input type="email" id="registerEmail"></div><div class="form-group"><label>Password</label><input type="password" id="registerPassword"></div><button onclick="handleRegister()" style="width: 100%;">Register</button><p style="text-align: center; margin-top: 15px; cursor: pointer;" onclick="showLogin()">Have account? <strong>Sign In</strong></p><div id="registerError" class="message error hidden"></div></div></div>
+<div id="homePage" class="hidden"><div id="message"></div><div class="section"><h2>➕ New Incident</h2><div class="grid-2"><div class="form-group"><label>Incident Type *</label><select id="incidentType" required><option value="">Select Type</option><option>Injury/Accident (Safety)</option><option>Employee illness</option><option>Fire/Emergency</option><option>Property Damage</option><option>BOLO</option><option>Theft/Loss of Company Property</option><option>Theft/Loss of Personal Property</option><option>Unauthorized Access/Trespassing (Security)</option><option>Tailgating</option><option>Threat/Verbal Dispute</option><option>Ergonomic problems</option><option>Falls</option><option>Cuts</option><option>Electric shock</option><option>Burns</option><option>Collisions</option><option>Commuting accidents (office-home)</option><option>psychiatric illness (panic attack, high stress)</option><option>Elevator trapped</option><option>Lost badge</option><option>espionage</option><option>other</option></select></div><div class="form-group"><label>Severity *</label><select id="incidentSeverity" required><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="critical">Critical</option></select></div></div><div class="grid-2"><div class="form-group"><label>Location of Incident *</label><input type="text" id="incidentLocation" placeholder="Where did it happen?"></div><div class="form-group"><label>Date *</label><input type="date" id="incidentDate" required></div></div><div class="grid-2"><div class="form-group"><label>Affected Employee</label><input type="text" id="affectedEmployee" placeholder="Employee name"></div><div class="form-group"><label>Assign Employee *</label><select id="assignEmployee" required><option value="">Select Employee</option><option>Livia Quinquiolo</option><option>Regina Murphy</option><option>Joe Desmarais</option><option>Steven Williams</option><option>Nicole Lima</option><option>Ali Talabe</option><option>Jose Hernandez</option><option>Mohammed Ataullah Khan</option><option>Larissa Arruda</option><option>Vasile Avasiloaei</option></select></div></div><div class="form-group"><label>Details *</label><textarea id="incidentDetails" rows="4" placeholder="Describe what happened..." required></textarea></div><button onclick="createIncident()">Create Incident (Gera Ticket)</button></div><div class="section"><h2>➕ New Event</h2><div class="grid-2"><div class="form-group"><label>Event Title</label><input type="text" id="eventTitle"></div><div class="form-group"><label>Location</label><input type="text" id="eventLocation"></div></div><div class="grid-2"><div class="form-group"><label>Date</label><input type="date" id="eventDate"></div><div class="form-group"><label>Attendees</label><input type="number" id="eventAttendees"></div></div><div class="form-group"><label>Description</label><textarea id="eventDescription" rows="3"></textarea></div><button onclick="createEvent()">Create Event</button></div></div>
+<div id="ticketsPage" class="hidden"><div id="ticketsMessage"></div><div id="ticketsMetrics"></div><div class="section"><h2>🎟️ Tickets</h2><div id="ticketsList" style="margin-top: 15px;"></div></div><div id="ticketDetail" class="hidden"><div class="ticket-detail"><button onclick="backToTickets()" style="margin-bottom: 15px;">← Back</button><div class="ticket-header"><div><div class="ticket-number">Ticket #<span id="detailNumber"></span></div><h2 id="detailTitle"></h2></div><div id="detailStatus"></div></div><p><strong>Tipo:</strong> <span id="detailType"></span></p><p><strong>Severidade:</strong> <span id="detailSeverity"></span></p><p><strong>Localização:</strong> <span id="detailLocation"></span></p><p><strong>Funcionário Afetado:</strong> <span id="detailAffected"></span></p><p><strong>Atribuído a:</strong> <span id="detailAssigned"></span></p><p><strong>Criado em:</strong> <span id="detailCreated"></span></p><p><strong>Tempo de Resolução:</strong> <span id="detailResolutionTime">-</span></p><p><strong>Detalhes:</strong> <span id="detailDetails"></span></p><div style="margin-top: 20px;"><label>Novo Status:</label><select id="statusSelect"><option value="Aberto">Aberto</option><option value="Em Progresso">Em Progresso</option><option value="Fechado">Fechado</option></select><button onclick="updateTicketStatus()" style="margin-left: 10px;">Update Status</button></div><div style="margin-top: 20px;"><h3>💬 Comentários</h3><div id="commentsList" style="margin: 15px 0; max-height: 300px; overflow-y: auto;"></div><textarea id="newComment" rows="3" placeholder="Adicionar comentário..." style="margin-top: 10px;"></textarea><button onclick="addComment()" style="margin-top: 10px; width: 100%;">Adicionar Comentário</button></div></div></div>
+<div id="recordsPage" class="hidden"><div id="recordsMessage"></div><div class="stats"><div class="stat-box"><h3 id="incidentCount">0</h3><p>Incidents</p></div><div class="stat-box"><h3 id="eventCount">0</h3><p>Events</p></div></div><div class="grid-2"><div class="section"><h2>📊 Incidents by Severity</h2><div class="chart-container"><canvas id="severityChart"></canvas></div></div><div class="section"><h2>📊 Incidents by Type</h2><div class="chart-container"><canvas id="typeChart"></canvas></div></div></div><div class="section"><h2>📊 Events by Status</h2><div class="chart-container"><canvas id="eventChart"></canvas></div></div><div class="section"><h2>🚨 Incidents List</h2><button class="export-btn" onclick="exportIncidentsXLSX()">📥 Export Incidents to Excel</button><div id="incidentsList" class="grid-cards" style="margin-top: 15px;"></div></div><div class="section"><h2>📅 Events List</h2><button class="export-btn" onclick="exportEventsXLSX()">📥 Export Events to Excel</button><div id="eventsList" class="grid-cards" style="margin-top: 15px;"></div></div></div>
+</div>
+<script>
+const API = `${window.location.protocol}//${window.location.hostname}/api`;
+let currentUser = null;
+let currentTicket = null;
+function getToken() { return localStorage.getItem('token'); }
+function showMessage(text, type = 'success', elementId = 'message') { const msg = document.getElementById(elementId); if (msg) { msg.textContent = text; msg.className = 'message ' + type; msg.classList.remove('hidden'); setTimeout(() => msg.classList.add('hidden'), 3000); } }
+function updateHeaderButtons() { const viewRecordsBtn = document.getElementById('viewRecordsBtn'); const ticketsBtn = document.getElementById('ticketsBtn'); if (currentUser && currentUser.canViewRecords) { viewRecordsBtn.style.display = 'block'; ticketsBtn.style.display = 'block'; } else { viewRecordsBtn.style.display = 'none'; ticketsBtn.style.display = 'none'; } }
+function showHome() { document.getElementById('homePage').classList.remove('hidden'); document.getElementById('recordsPage').classList.add('hidden'); document.getElementById('ticketsPage').classList.add('hidden'); document.querySelectorAll('.header-btn').forEach(btn => btn.classList.remove('active')); event.target.classList.add('active'); }
+function showTickets() { if (!currentUser || !currentUser.canViewRecords) { showMessage('Sem permissão', 'error'); return; } document.getElementById('homePage').classList.add('hidden'); document.getElementById('recordsPage').classList.add('hidden'); document.getElementById('ticketsPage').classList.remove('hidden'); document.querySelectorAll('.header-btn').forEach(btn => btn.classList.remove('active')); event.target.classList.add('active'); loadTickets(); loadMetrics(); }
+function showRecords() { if (!currentUser || !currentUser.canViewRecords) { showMessage('Sem permissão', 'error'); return; } document.getElementById('homePage').classList.add('hidden'); document.getElementById('ticketsPage').classList.add('hidden'); document.getElementById('recordsPage').classList.remove('hidden'); document.querySelectorAll('.header-btn').forEach(btn => btn.classList.remove('active')); event.target.classList.add('active'); loadIncidents(); loadEvents(); }
+function showLogin() { document.getElementById('loginPage').classList.remove('hidden'); document.getElementById('registerPage').classList.add('hidden'); document.getElementById('homePage').classList.add('hidden'); document.getElementById('recordsPage').classList.add('hidden'); document.getElementById('ticketsPage').classList.add('hidden'); }
+function showRegister() { document.getElementById('loginPage').classList.add('hidden'); document.getElementById('registerPage').classList.remove('hidden'); }
+function showDashboard() { document.getElementById('loginPage').classList.add('hidden'); document.getElementById('registerPage').classList.add('hidden'); document.getElementById('homePage').classList.remove('hidden'); document.getElementById('recordsPage').classList.add('hidden'); document.getElementById('ticketsPage').classList.add('hidden'); updateHeaderButtons(); }
+async function handleLogin() { const email = document.getElementById('loginEmail').value; const password = document.getElementById('loginPassword').value; try { const res = await fetch(`${API}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) }); const data = await res.json(); if (data.token && data.user) { localStorage.setItem('token', data.token); currentUser = data.user; showDashboard(); } else { showMessage(data.error || 'Login falhou', 'error', 'loginError'); } } catch (err) { showMessage('Erro de conexão', 'error', 'loginError'); } }
+async function handleRegister() { const name = document.getElementById('registerName').value; const email = document.getElementById('registerEmail').value; const password = document.getElementById('registerPassword').value; try { const res = await fetch(`${API}/auth/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, password }) }); const data = await res.json(); if (data.token && data.user) { localStorage.setItem('token', data.token); currentUser = data.user; showDashboard(); } else { showMessage(data.error || 'Registro falhou', 'error', 'registerError'); } } catch (err) { showMessage('Erro de conexão', 'error', 'registerError'); } }
+async function createIncident() { const incidentType = document.getElementById('incidentType').value; const severity = document.getElementById('incidentSeverity').value; const location = document.getElementById('incidentLocation').value; const date = document.getElementById('incidentDate').value; const affectedEmployee = document.getElementById('affectedEmployee').value; const assignEmployee = document.getElementById('assignEmployee').value; const details = document.getElementById('incidentDetails').value; if (!incidentType || !location || !date || !details || !assignEmployee) { showMessage('Preencha todos os campos obrigatórios', 'error'); return; } try { const res = await fetch(`${API}/incidents`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` }, body: JSON.stringify({ title: incidentType, incidentType, severity, location, date, affectedEmployee, assignEmployee, details }) }); if (res.ok) { const data = await res.json(); document.getElementById('incidentType').value = ''; document.getElementById('incidentLocation').value = ''; document.getElementById('incidentDate').value = ''; document.getElementById('affectedEmployee').value = ''; document.getElementById('assignEmployee').value = ''; document.getElementById('incidentDetails').value = ''; showMessage('✓ Incidente criado! Ticket gerado automaticamente!'); } else { showMessage('Erro ao criar incidente', 'error'); } } catch (err) { showMessage('Erro: ' + err.message, 'error'); } }
+async function createEvent() { const title = document.getElementById('eventTitle').value; const location = document.getElementById('eventLocation').value; const date = document.getElementById('eventDate').value; const attendees = document.getElementById('eventAttendees').value; const description = document.getElementById('eventDescription').value; if (!title || !location || !date) { showMessage('Preencha os campos obrigatórios', 'error'); return; } try { const res = await fetch(`${API}/events`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` }, body: JSON.stringify({ title, location, date, attendees, description }) }); if (res.ok) { document.getElementById('eventTitle').value = ''; document.getElementById('eventLocation').value = ''; document.getElementById('eventDate').value = ''; document.getElementById('eventAttendees').value = ''; document.getElementById('eventDescription').value = ''; showMessage('✓ Evento criado!'); } else { showMessage('Erro ao criar evento', 'error'); } } catch (err) { showMessage('Erro: ' + err.message, 'error'); } }
+async function loadTickets() { try { const res = await fetch(`${API}/tickets`, { headers: { 'Authorization': `Bearer ${getToken()}` } }); const data = await res.json(); const list = document.getElementById('ticketsList'); if (!Array.isArray(data) || data.length === 0) { list.innerHTML = '<p>Nenhum ticket</p>'; return; } list.innerHTML = data.map(t => `<div class="card"><h3 onclick="viewTicket('${t._id}')">#${t.number} - ${t.title}</h3><p><strong>Tipo:</strong> ${t.incidentType}</p><p><strong>Severidade:</strong> <span class="badge">${t.severity.toUpperCase()}</span></p><p><strong>Status:</strong> <span class="badge ${t.status === 'Aberto' ? 'aberto' : t.status === 'Em Progresso' ? 'progresso' : 'fechado'}">${t.status}</span></p><p><strong>Localização:</strong> ${t.location}</p><p><strong>Atribuído a:</strong> ${t.assignEmployee}</p><p><strong>Tempo:</strong> ${t.resolutionTimeHours ? t.resolutionTimeHours + ' horas' : '-'}</p><p><strong>Comentários:</strong> ${t.comments.length}</p></div>`).join(''); } catch (err) { console.error('Erro:', err); } }
+async function loadMetrics() { try { const res = await fetch(`${API}/tickets/metrics/all`, { headers: { 'Authorization': `Bearer ${getToken()}` } }); const metrics = await res.json(); const metricsDiv = document.getElementById('ticketsMetrics'); metricsDiv.innerHTML = `<div class="metrics-grid"><div class="metric-box"><h4>${metrics.openTickets}</h4><p>Abertos</p></div><div class="metric-box"><h4>${metrics.inProgressTickets}</h4><p>Em Progresso</p></div><div class="metric-box"><h4>${metrics.closedTickets}</h4><p>Fechados</p></div><div class="metric-box"><h4>${metrics.averageResolutionTime}h</h4><p>Tempo Médio</p></div><div class="metric-box"><h4>${metrics.fastestResolution}h</h4><p>Mais Rápido</p></div><div class="metric-box"><h4>${metrics.slowestResolution}h</h4><p>Mais Lento</p></div></div>`; } catch (err) { console.error('Erro:', err); } }
+async function viewTicket(ticketId) { try { const res = await fetch(`${API}/tickets/${ticketId}`, { headers: { 'Authorization': `Bearer ${getToken()}` } }); const ticket = await res.json(); currentTicket = ticket; document.getElementById('ticketsList').parentElement.classList.add('hidden'); document.getElementById('ticketDetail').classList.remove('hidden'); document.getElementById('detailNumber').textContent = ticket.number; document.getElementById('detailTitle').textContent = ticket.title; document.getElementById('detailType').textContent = ticket.incidentType; document.getElementById('detailSeverity').textContent = ticket.severity; document.getElementById('detailLocation').textContent = ticket.location; document.getElementById('detailAffected').textContent = ticket.affectedEmployee || '-'; document.getElementById('detailAssigned').textContent = ticket.assignEmployee; document.getElementById('detailCreated').textContent = new Date(ticket.createdAt).toLocaleString(); document.getElementById('detailResolutionTime').textContent = ticket.resolutionTimeHours ? ticket.resolutionTimeHours + ' horas' : '-'; document.getElementById('detailDetails').textContent = ticket.details; document.getElementById('detailStatus').innerHTML = `<span class="badge ${ticket.status === 'Aberto' ? 'aberto' : ticket.status === 'Em Progresso' ? 'progresso' : 'fechado'}">${ticket.status}</span>`; document.getElementById('statusSelect').value = ticket.status; document.getElementById('commentsList').innerHTML = ticket.comments.map(c => `<div class="comment"><div class="comment-user">${c.user}</div><div class="comment-time">${new Date(c.createdAt).toLocaleString()}</div><div class="comment-text">${c.text}</div></div>`).join(''); } catch (err) { console.error('Erro:', err); } }
+function backToTickets() { document.getElementById('ticketDetail').classList.add('hidden'); document.getElementById('ticketsList').parentElement.classList.remove('hidden'); }
+async function addComment() { const text = document.getElementById('newComment').value; if (!text) { showMessage('Digite um comentário', 'error', 'ticketsMessage'); return; } try { const res = await fetch(`${API}/tickets/${currentTicket._id}/comments`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` }, body: JSON.stringify({ user: currentUser.name, text }) }); if (res.ok) { document.getElementById('newComment').value = ''; viewTicket(currentTicket._id); showMessage('✓ Comentário adicionado!', 'success', 'ticketsMessage'); } } catch (err) { showMessage('Erro: ' + err.message, 'error', 'ticketsMessage'); } }
+async function updateTicketStatus() { const newStatus = document.getElementById('statusSelect').value; try { const res = await fetch(`${API}/tickets/${currentTicket._id}/status`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` }, body: JSON.stringify({ status: newStatus }) }); if (res.ok) { showMessage('✓ Status atualizado!', 'success', 'ticketsMessage'); viewTicket(currentTicket._id); } } catch (err) { showMessage('Erro: ' + err.message, 'error', 'ticketsMessage'); } }
+async function loadIncidents() { try { const res = await fetch(`${API}/incidents`, { headers: { 'Authorization': `Bearer ${getToken()}` } }); const data = await res.json(); const list = document.getElementById('incidentsList'); document.getElementById('incidentCount').textContent = Array.isArray(data) ? data.length : '0'; if (!Array.isArray(data) || data.length === 0) { list.innerHTML = '<p>Sem incidentes</p>'; return; } list.innerHTML = data.map(i => `<div class="card"><h3>${i.incidentType}</h3><p><strong>Severidade:</strong> <span class="badge">${i.severity.toUpperCase()}</span></p><p><strong>Localização:</strong> ${i.location}</p><p><strong>Data:</strong> ${new Date(i.date).toLocaleDateString()}</p><p><strong>Detalhes:</strong> ${i.details}</p></div>`).join(''); } catch (err) { console.error('Erro:', err); } }
+async function loadEvents() { try { const res = await fetch(`${API}/events`, { headers: { 'Authorization': `Bearer ${getToken()}` } }); const data = await res.json(); const list = document.getElementById('eventsList'); document.getElementById('eventCount').textContent = Array.isArray(data) ? data.length : '0'; if (!Array.isArray(data) || data.length === 0) { list.innerHTML = '<p>Sem eventos</p>'; return; } list.innerHTML = data.map(e => `<div class="card"><h3>${e.title}</h3><p><strong>Localização:</strong> ${e.location}</p><p><strong>Data:</strong> ${new Date(e.date).toLocaleDateString()}</p><p><strong>Participantes:</strong> ${e.attendees || 0}</p></div>`).join(''); } catch (err) { console.error('Erro:', err); } }
+function exportIncidentsXLSX() { fetch(`${API}/incidents`, { headers: { 'Authorization': `Bearer ${getToken()}` } }).then(r => r.json()).then(data => { if (!Array.isArray(data) || data.length === 0) { showMessage('Sem incidentes', 'error'); return; } const ws_data = [['Tipo', 'Severidade', 'Localização', 'Data', 'Funcionário Afetado', 'Atribuído a', 'Detalhes'], ...data.map(i => [i.incidentType, i.severity, i.location, new Date(i.date).toLocaleDateString(), i.affectedEmployee || '', i.assignEmployee || '', i.details || ''])]; const ws = XLSX.utils.aoa_to_sheet(ws_data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Incidentes'); XLSX.writeFile(wb, 'incidentes.xlsx'); showMessage('✓ Exportado!'); }); }
+function exportEventsXLSX() { fetch(`${API}/events`, { headers: { 'Authorization': `Bearer ${getToken()}` } }).then(r => r.json()).then(data => { if (!Array.isArray(data) || data.length === 0) { showMessage('Sem eventos', 'error'); return; } const ws_data = [['Título', 'Localização', 'Data', 'Participantes', 'Descrição'], ...data.map(e => [e.title, e.location, new Date(e.date).toLocaleDateString(), e.attendees || 0, e.description || ''])]; const ws = XLSX.utils.aoa_to_sheet(ws_data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Eventos'); XLSX.writeFile(wb, 'eventos.xlsx'); showMessage('✓ Exportado!'); }); }
+function logout() { localStorage.removeItem('token'); currentUser = null; showLogin(); }
+if (getToken()) { showDashboard(); } else { showLogin(); }
+</script>
 </body>
 </html>
