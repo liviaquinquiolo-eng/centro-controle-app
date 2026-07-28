@@ -5,7 +5,7 @@
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: Arial; background: #f5f5f5; }
-.header { background: #378ADD; color: white; padding: 20px; display: flex; justify-content: space-between; }
+.header { background: #378ADD; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
 .nav { display: flex; gap: 10px; }
 button { padding: 10px 15px; background: white; color: #378ADD; border: none; cursor: pointer; border-radius: 4px; font-weight: bold; }
 button:hover { background: #e8e8e8; }
@@ -13,13 +13,13 @@ button:hover { background: #e8e8e8; }
 .container { max-width: 1200px; margin: 20px auto; padding: 20px; }
 .page { display: none; }
 .page.active { display: block; }
-.section { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; }
+.section { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 h2 { margin-bottom: 15px; color: #333; border-bottom: 2px solid #378ADD; padding-bottom: 10px; }
 .form-group { margin: 15px 0; }
 label { display: block; font-weight: bold; margin: 5px 0; }
 input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.card { background: #f9f9f9; padding: 15px; border-left: 4px solid #378ADD; border-radius: 4px; cursor: pointer; }
+.card { background: #f9f9f9; padding: 15px; border-left: 4px solid #378ADD; border-radius: 4px; cursor: pointer; margin: 10px 0; }
 .card:hover { background: #f0f0f0; }
 .badge { display: inline-block; padding: 5px 10px; background: #378ADD; color: white; border-radius: 3px; font-size: 12px; margin: 2px; }
 .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 20px 0; }
@@ -27,9 +27,6 @@ input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; bo
 .metric h3 { font-size: 28px; margin-bottom: 5px; }
 .chart { position: relative; height: 300px; margin: 20px 0; }
 .hidden { display: none; }
-.message { padding: 10px; margin: 10px 0; border-radius: 4px; }
-.success { background: #d4edda; color: #155724; }
-.error { background: #f8d7da; color: #721c24; }
 .comment { background: #f9f9f9; padding: 10px; margin: 10px 0; border-left: 3px solid #378ADD; }
 </style>
 </head>
@@ -45,17 +42,15 @@ input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; bo
 </div>
 
 <div class="container">
+
 <!-- LOGIN -->
 <div id="loginPage" class="page active">
 <div class="section" style="max-width: 400px; margin: 50px auto;">
 <h2>Login</h2>
-<div id="loginMsg"></div>
 <div class="form-group"><label>Email</label><input type="email" id="loginEmail"></div>
 <div class="form-group"><label>Password</label><input type="password" id="loginPassword"></div>
 <button onclick="handleLogin()" style="width: 100%;">Sign In</button>
-<p style="text-align: center; margin-top: 15px;">
-Don't have account? <button onclick="showPage('register')" style="padding: 5px 10px;">Sign Up</button>
-</p>
+<p style="text-align: center; margin-top: 15px;">Don't have account? <button onclick="showPage('register')" style="background:none; color:#378ADD;">Sign Up</button></p>
 </div>
 </div>
 
@@ -63,7 +58,6 @@ Don't have account? <button onclick="showPage('register')" style="padding: 5px 1
 <div id="registerPage" class="page hidden">
 <div class="section" style="max-width: 400px; margin: 50px auto;">
 <h2>Sign Up</h2>
-<div id="registerMsg"></div>
 <div class="form-group"><label>Name</label><input type="text" id="registerName"></div>
 <div class="form-group"><label>Email</label><input type="email" id="registerEmail"></div>
 <div class="form-group"><label>Password</label><input type="password" id="registerPassword"></div>
@@ -76,25 +70,69 @@ Don't have account? <button onclick="showPage('register')" style="padding: 5px 1
 <div class="section">
 <h2>➕ New Incident (Auto Ticket)</h2>
 <div class="grid">
-<div class="form-group"><label>Type *</label><select id="incType"><option>Injury/Accident</option><option>Employee illness</option><option>Fire/Emergency</option><option>Other</option></select></div>
-<div class="form-group"><label>Severity *</label><select id="incSeverity"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="critical">Critical</option></select></div>
+<div class="form-group"><label>Type *</label>
+<select id="incType" required>
+<option value="">Select Type</option>
+<option>Injury/Accident (Safety)</option>
+<option>Employee illness</option>
+<option>Fire/Emergency</option>
+<option>Property Damage</option>
+<option>Theft/Loss of Company Property</option>
+<option>Theft/Loss of Personal Property</option>
+<option>Unauthorized Access/Trespassing (Security)</option>
+<option>Tailgating</option>
+<option>Threat/Verbal Dispute</option>
+<option>Ergonomic problems</option>
+<option>Falls</option>
+<option>Cuts</option>
+<option>BOLO</option>
+<option>Electric shock</option>
+<option>Burns</option>
+<option>Collisions</option>
+<option>Commuting accidents (office-home)</option>
+<option>Psychiatric illness (panic attack, high stress)</option>
+<option>Elevator trapped</option>
+<option>Lost badge</option>
+<option>Other</option>
+</select>
+</div>
+<div class="form-group"><label>Severity *</label>
+<select id="incSeverity" required>
+<option value="low">Low</option>
+<option value="medium">Medium</option>
+<option value="high">High</option>
+<option value="critical">Critical</option>
+</select>
+</div>
 </div>
 <div class="grid">
 <div class="form-group"><label>Location *</label><input type="text" id="incLocation"></div>
-<div class="form-group"><label>Date *</label><input type="date" id="incDate"></div>
+<div class="form-group"><label>Date *</label><input type="date" id="incDate" required></div>
 </div>
 <div class="grid">
-<div class="form-group"><label>Affected</label><input type="text" id="incAffected"></div>
-<div class="form-group"><label>Assign To *</label><select id="incAssign"><option>Livia Quinquiolo</option><option>Nicole Lima</option><option>Joe Desmarais</option><option>Regina Murphy</option></select></div>
+<div class="form-group"><label>Affected Employee</label><input type="text" id="incAffected"></div>
+<div class="form-group"><label>Assign To *</label>
+<select id="incAssign" required>
+<option value="">Select</option>
+<option>Livia Quinquiolo</option>
+<option>Nicole Lima</option>
+<option>Joe Desmarais</option>
+<option>Regina Murphy</option>
+<option>Steven Williams</option>
+<option>Ali Talabe</option>
+<option>Jose Hernandez</option>
+<option>Mohammed Khan</option>
+<option>Vasile Avasiloaei</option>
+</select>
 </div>
-<div class="form-group"><label>Details *</label><textarea id="incDetails" rows="3"></textarea></div>
+</div>
+<div class="form-group"><label>Details *</label><textarea id="incDetails" rows="4"></textarea></div>
 <button onclick="createIncident()">Create Incident</button>
 </div>
 </div>
 
 <!-- TICKETS -->
 <div id="ticketsPage" class="page hidden">
-<div id="ticketsMsg"></div>
 <div id="ticketsMetrics" class="metrics"></div>
 <div class="section">
 <h2>🎟️ Tickets</h2>
@@ -104,11 +142,12 @@ Don't have account? <button onclick="showPage('register')" style="padding: 5px 1
 <button onclick="backToTickets()">← Back</button>
 <div class="section">
 <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-<div><div style="font-size: 24px; font-weight: bold; color: #378ADD;">Ticket #<span id="detailNumber"></span></div><h2 id="detailTitle" style="border: none; margin: 0;"></h2></div>
+<div><div style="font-size: 24px; font-weight: bold; color: #378ADD;">Ticket #<span id="detailNumber"></span></div><h2 id="detailTitle" style="border:none; margin:0;"></h2></div>
 <div id="detailStatus"></div>
 </div>
 <p><strong>Type:</strong> <span id="detailType"></span></p>
 <p><strong>Severity:</strong> <span id="detailSeverity"></span></p>
+<p><strong>Location:</strong> <span id="detailLocation"></span></p>
 <p><strong>Assigned:</strong> <span id="detailAssigned"></span></p>
 <p><strong>Resolution Time:</strong> <span id="detailTime">-</span></p>
 <div style="margin-top: 20px;">
@@ -118,29 +157,40 @@ Don't have account? <button onclick="showPage('register')" style="padding: 5px 1
 <option value="Em Progresso">Em Progresso</option>
 <option value="Fechado">Fechado</option>
 </select>
-<button onclick="updateStatus()">Update</button>
+<button onclick="updateStatus()" style="margin-left: 10px;">Update</button>
 </div>
 <h3 style="margin-top: 20px;">💬 Comments</h3>
-<div id="commentsList" style="max-height: 200px; overflow-y: auto;"></div>
-<textarea id="newComment" placeholder="Add comment..." rows="2" style="margin-top: 10px;"></textarea>
+<div id="commentsList" style="max-height: 250px; overflow-y: auto;"></div>
+<textarea id="newComment" placeholder="Add comment..." rows="3" style="margin-top: 10px;"></textarea>
 <button onclick="addComment()" style="width: 100%; margin-top: 10px;">Add Comment</button>
-</div>
 </div>
 </div>
 
 <!-- CHARTS -->
 <div id="chartsPage" class="page hidden">
-<div id="chartsMsg"></div>
 <div id="chartsMetrics" class="metrics"></div>
+<div class="grid">
 <div class="section">
-<h2>📊 Incidents by Severity</h2>
+<h2>📊 Severity</h2>
 <div class="chart"><canvas id="severityChart"></canvas></div>
 </div>
 <div class="section">
-<h2>📊 Tickets by Status</h2>
+<h2>📊 Status</h2>
 <div class="chart"><canvas id="statusChart"></canvas></div>
 </div>
 </div>
+<div class="grid">
+<div class="section">
+<h2>📊 Location</h2>
+<div class="chart"><canvas id="locationChart"></canvas></div>
+</div>
+<div class="section">
+<h2>📊 Date Distribution</h2>
+<div class="chart"><canvas id="dateChart"></canvas></div>
+</div>
+</div>
+</div>
+
 </div>
 
 <script>
@@ -149,6 +199,7 @@ let currentUser = null;
 let currentTicket = null;
 
 function getToken() { return localStorage.getItem('token'); }
+
 function showPage(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   if(page === 'login') document.getElementById('loginPage').classList.add('active');
@@ -156,10 +207,12 @@ function showPage(page) {
   else if(page === 'home') document.getElementById('homePage').classList.add('active');
   else if(page === 'tickets') { document.getElementById('ticketsPage').classList.add('active'); loadTickets(); loadMetrics(); }
   else if(page === 'charts') { document.getElementById('chartsPage').classList.add('active'); loadCharts(); }
+  
   if(!currentUser) return;
   document.getElementById('ticketsBtn').style.display = currentUser.canViewRecords ? 'block' : 'none';
   document.getElementById('chartsBtn').style.display = currentUser.canViewRecords ? 'block' : 'none';
 }
+
 async function handleLogin() {
   const email = document.getElementById('loginEmail').value;
   const password = document.getElementById('loginPassword').value;
@@ -167,9 +220,10 @@ async function handleLogin() {
     const res = await fetch(`${API}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
     const data = await res.json();
     if(data.token && data.user) { localStorage.setItem('token', data.token); currentUser = data.user; showPage('home'); }
-    else document.getElementById('loginMsg').innerHTML = `<div class="message error">${data.error}</div>`;
-  } catch(e) { document.getElementById('loginMsg').innerHTML = `<div class="message error">Error</div>`; }
+    else alert(data.error || 'Login failed');
+  } catch(e) { alert('Error'); }
 }
+
 async function handleRegister() {
   const name = document.getElementById('registerName').value;
   const email = document.getElementById('registerEmail').value;
@@ -178,30 +232,36 @@ async function handleRegister() {
     const res = await fetch(`${API}/auth/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, password }) });
     const data = await res.json();
     if(data.token && data.user) { localStorage.setItem('token', data.token); currentUser = data.user; showPage('home'); }
-    else document.getElementById('registerMsg').innerHTML = `<div class="message error">${data.error}</div>`;
-  } catch(e) { document.getElementById('registerMsg').innerHTML = `<div class="message error">Error</div>`; }
-}
-async function createIncident() {
-  try {
-    const res = await fetch(`${API}/incidents`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` }, body: JSON.stringify({ title: document.getElementById('incType').value, incidentType: document.getElementById('incType').value, severity: document.getElementById('incSeverity').value, location: document.getElementById('incLocation').value, date: document.getElementById('incDate').value, affectedEmployee: document.getElementById('incAffected').value, assignEmployee: document.getElementById('incAssign').value, details: document.getElementById('incDetails').value }) });
-    if(res.ok) alert('✓ Incident created & Ticket generated!');
+    else alert(data.error || 'Registration failed');
   } catch(e) { alert('Error'); }
 }
+
+async function createIncident() {
+  if(!document.getElementById('incType').value) { alert('Fill all required fields'); return; }
+  try {
+    await fetch(`${API}/incidents`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` }, body: JSON.stringify({ title: document.getElementById('incType').value, incidentType: document.getElementById('incType').value, severity: document.getElementById('incSeverity').value, location: document.getElementById('incLocation').value, date: document.getElementById('incDate').value, affectedEmployee: document.getElementById('incAffected').value, assignEmployee: document.getElementById('incAssign').value, details: document.getElementById('incDetails').value }) });
+    alert('✓ Incident & Ticket created!');
+    document.getElementById('incType').value = '';
+  } catch(e) { alert('Error'); }
+}
+
 async function loadTickets() {
   try {
     const res = await fetch(`${API}/tickets`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
     const data = await res.json();
     if(!Array.isArray(data) || data.length === 0) { document.getElementById('ticketsList').innerHTML = '<p>No tickets</p>'; return; }
-    document.getElementById('ticketsList').innerHTML = data.map(t => `<div class="card" onclick="viewTicket('${t._id}')"><h3>#${t.number} - ${t.title}</h3><p>Type: ${t.incidentType}</p><p>Severity: <span class="badge">${t.severity}</span></p><p>Status: <span class="badge">${t.status}</span></p><p>Time: ${t.resolutionTimeHours ? t.resolutionTimeHours + 'h' : '-'}</p></div>`).join('');
-  } catch(e) { console.error(e); }
+    document.getElementById('ticketsList').innerHTML = data.map(t => `<div class="card" onclick="viewTicket('${t._id}')"><h3>#${t.number} - ${t.title}</h3><p>Type: ${t.incidentType}</p><p>Severity: <span class="badge">${t.severity}</span></p><p>Status: <span class="badge">${t.status}</span></p><p>Location: ${t.location}</p><p>Time: ${t.resolutionTimeHours ? t.resolutionTimeHours + 'h' : '-'}</p></div>`).join('');
+  } catch(e) { }
 }
+
 async function loadMetrics() {
   try {
     const res = await fetch(`${API}/tickets/metrics/all`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
     const m = await res.json();
     document.getElementById('ticketsMetrics').innerHTML = `<div class="metric"><h3>${m.openTickets}</h3><p>Open</p></div><div class="metric"><h3>${m.inProgressTickets}</h3><p>In Progress</p></div><div class="metric"><h3>${m.closedTickets}</h3><p>Closed</p></div><div class="metric"><h3>${m.averageResolutionTime}h</h3><p>Avg Time</p></div>`;
-  } catch(e) { console.error(e); }
+  } catch(e) { }
 }
+
 async function viewTicket(id) {
   try {
     const res = await fetch(`${API}/tickets/${id}`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
@@ -213,45 +273,67 @@ async function viewTicket(id) {
     document.getElementById('detailTitle').textContent = t.title;
     document.getElementById('detailType').textContent = t.incidentType;
     document.getElementById('detailSeverity').textContent = t.severity;
+    document.getElementById('detailLocation').textContent = t.location;
     document.getElementById('detailAssigned').textContent = t.assignEmployee;
     document.getElementById('detailTime').textContent = t.resolutionTimeHours ? t.resolutionTimeHours + ' hours' : '-';
     document.getElementById('detailStatus').innerHTML = `<span class="badge">${t.status}</span>`;
     document.getElementById('statusSelect').value = t.status;
     document.getElementById('commentsList').innerHTML = t.comments.map(c => `<div class="comment"><strong>${c.user}</strong><br><small>${new Date(c.createdAt).toLocaleString()}</small><br>${c.text}</div>`).join('');
-  } catch(e) { console.error(e); }
+  } catch(e) { }
 }
+
 function backToTickets() { document.getElementById('ticketDetail').classList.add('hidden'); document.getElementById('ticketsList').parentElement.classList.remove('hidden'); }
+
 async function addComment() {
   const text = document.getElementById('newComment').value;
   if(!text) return;
   try {
     await fetch(`${API}/tickets/${currentTicket._id}/comments`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` }, body: JSON.stringify({ user: currentUser.name, text }) });
+    document.getElementById('newComment').value = '';
     viewTicket(currentTicket._id);
-  } catch(e) { console.error(e); }
+  } catch(e) { }
 }
+
 async function updateStatus() {
   try {
     await fetch(`${API}/tickets/${currentTicket._id}/status`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` }, body: JSON.stringify({ status: document.getElementById('statusSelect').value }) });
     viewTicket(currentTicket._id);
-  } catch(e) { console.error(e); }
+    loadMetrics();
+  } catch(e) { }
 }
+
 async function loadCharts() {
   try {
     const res = await fetch(`${API}/tickets`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
     const tickets = await res.json();
     if(!Array.isArray(tickets)) return;
+    
     const severity = { low: 0, medium: 0, high: 0, critical: 0 };
     const status = { 'Aberto': 0, 'Em Progresso': 0, 'Fechado': 0 };
+    const location = {};
+    const dateData = {};
+    
     tickets.forEach(t => {
       if(severity.hasOwnProperty(t.severity)) severity[t.severity]++;
       if(status.hasOwnProperty(t.status)) status[t.status]++;
+      location[t.location] = (location[t.location] || 0) + 1;
+      const date = new Date(t.createdAt).toLocaleDateString();
+      dateData[date] = (dateData[date] || 0) + 1;
     });
-    new Chart(document.getElementById('severityChart'), { type: 'bar', data: { labels: ['Low', 'Medium', 'High', 'Critical'], datasets: [{ label: 'Count', data: [severity.low, severity.medium, severity.high, severity.critical], backgroundColor: ['#28a745', '#ffc107', '#fd7e14', '#dc3545'] }] }, options: { responsive: true, maintainAspectRatio: false } });
+    
+    new Chart(document.getElementById('severityChart'), { type: 'bar', data: { labels: ['Low', 'Medium', 'High', 'Critical'], datasets: [{ label: 'Count', data: [severity.low, severity.medium, severity.high, severity.critical], backgroundColor: ['#28a745', '#ffc107', '#fd7e14', '#dc3545'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+    
     new Chart(document.getElementById('statusChart'), { type: 'doughnut', data: { labels: ['Aberto', 'Em Progresso', 'Fechado'], datasets: [{ data: [status['Aberto'], status['Em Progresso'], status['Fechado']], backgroundColor: ['#ffc107', '#17a2b8', '#28a745'] }] }, options: { responsive: true, maintainAspectRatio: false } });
-  } catch(e) { console.error(e); }
+    
+    new Chart(document.getElementById('locationChart'), { type: 'bar', data: { labels: Object.keys(location).slice(0, 10), datasets: [{ label: 'Count', data: Object.values(location).slice(0, 10), backgroundColor: '#17a2b8' }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+    
+    new Chart(document.getElementById('dateChart'), { type: 'line', data: { labels: Object.keys(dateData).slice(0, 15), datasets: [{ label: 'Incidents', data: Object.values(dateData).slice(0, 15), borderColor: '#378ADD', backgroundColor: 'rgba(55, 138, 221, 0.1)', tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+  } catch(e) { }
 }
+
 function logout() { localStorage.removeItem('token'); currentUser = null; showPage('login'); }
-if(getToken()) { try { currentUser = { canViewRecords: true }; showPage('home'); } catch(e) { showPage('login'); } } else { showPage('login'); }
+
+if(getToken()) { currentUser = { canViewRecords: true }; showPage('home'); } else { showPage('login'); }
 </script>
 </body>
 </html>
